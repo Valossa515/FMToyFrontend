@@ -1,11 +1,15 @@
+import React from 'react';
 
-function App() {
- 
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Pages from 'pages'; // Certifique-se de que o caminho do import está correto
+
+
+const App: React.FC = () => {
   return (
-    <>
-      
-    </>
-  )
-}
+    <div>
+      <Pages />
+    </div>
+  );
+};
 
-export default App
+export default App;
