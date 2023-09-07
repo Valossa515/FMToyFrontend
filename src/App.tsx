@@ -1,12 +1,9 @@
 import React from 'react';
-
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Pages from 'pages'; // Certifique-se de que o caminho do import está correto
-
+import Pages from 'pages';
 
 const App: React.FC = () => {
   return (
-    <div>
+    <div className='App'>
       <Pages />
     </div>
   );

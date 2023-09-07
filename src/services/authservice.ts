@@ -3,7 +3,7 @@ import { BACKEND_URL } from "utils/system";
 
 async function login(username: string, password: string) {
   try {
-    const response = await axios.post(BACKEND_URL + "signin", {
+    const response = await axios.post(`${BACKEND_URL}auth/signin`, {
       username,
       password
     });
@@ -11,7 +11,6 @@ async function login(username: string, password: string) {
     if (response.data.accessToken) {
       localStorage.setItem("user", JSON.stringify(response.data));
     }
-
     return response.data;
   } catch (error) {
     // Trate o erro de alguma forma apropriada, como registrar ou notificar
@@ -26,7 +25,7 @@ function logout() {
 
 async function register(username: string, email: string, password: string) {
   try {
-    const response = await axios.post(BACKEND_URL + "signup", {
+    const response = await axios.post(`${BACKEND_URL}auth/signup`, {
       username,
       email,
       password
