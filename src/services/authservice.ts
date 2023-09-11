@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BACKEND_URL } from "utils/system";
-
+import './authInterceptor';
 async function login(username: string, password: string) {
   try {
     const response = await axios.post(`${BACKEND_URL}auth/signin`, {
@@ -43,5 +43,6 @@ function getCurrentUser() {
   const userStr = localStorage.getItem("user");
   return userStr ? JSON.parse(userStr) : null;
 }
+
 
 export default { login, logout, register, getCurrentUser };

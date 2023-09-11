@@ -6,9 +6,8 @@ import authservice from 'services/authservice';
 const LoginPage: React.FC = () => {
   const [user, setUser] = useState<ClienteDTO | null>(null);
   const handleLogin = (cliente: ClienteDTO) => {
-    // Quando o login for bem-sucedido, atualize o estado do usuário
     setUser(cliente);
-  };
+  };                                                  
 
   const handleLogout = () => {
     // Implemente a função de logout do seu serviço de autenticação
@@ -19,15 +18,14 @@ const LoginPage: React.FC = () => {
 
   return (
     <div>
-        {user ? (
-          <div>
-            <p>Bem-vindo, {user.nome}!</p>
-            <button onClick={handleLogout}>Logout</button>
-          </div>
-        ) : (
-          <Login onLogin={handleLogin} />
-        )}
-        
+      {user ? (
+        <div>
+          <p>Bem-vindo, {user.nome}!</p>
+          <button onClick={handleLogout}>Logout</button>
+        </div>
+      ) : (
+        <Login onLogin={handleLogin} />
+      )}
     </div>
   );
 };

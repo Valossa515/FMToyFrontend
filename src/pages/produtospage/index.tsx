@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import produtoservice from 'services/produtoservice';
 import { ProdutoDTO } from 'models/produto';
+import ProdutoCard from 'components/CardProdutos';
 
 const ProdutoPage: React.FC = () => {
   const location = useLocation();
+  const history = useNavigate();
 
   const params = useMemo(() => {
     return new URLSearchParams(location.search);
@@ -24,87 +26,74 @@ const ProdutoPage: React.FC = () => {
     .filter(id => id !== null) as number[];
 
   const [produtos, setProdutos] = useState<ProdutoDTO[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(page);
-  const [hasInteracted, setHasInteracted] = useState<boolean>(false);
+  const [prevQueryParams, setPrevQueryParams] = useState<string>('');
 
   useEffect(() => {
-    let isMounted = true;
-
     async function fetchData() {
       try {
-        const novosProdutos = await produtoservice.searchProducts(
-          nome,
-          categorias,
-          currentPage,
-          linesPerPage,
-          orderBy,
-          direction
-        );
-
-        if (isMounted) {
-          if (novosProdutos && novosProdutos.length > 0) {
-            setProdutos(novosProdutos);
-          } else {
-            console.error('Nenhum produto foi encontrado na resposta da API.');
-            console.log('Resposta da API:', novosProdutos);
-          }
+        const queryParams = `${page}-${linesPerPage}-${orderBy}-${direction}-${nome}-${categorias.join('-')}`;
+        // Verifica se os parâmetros da consulta mudaram
+        if (queryParams !== prevQueryParams) {
+          const novosProdutos = await produtoservice.searchProducts(
+            nome,
+            categorias,
+            page,
+            linesPerPage,
+            orderBy,
+            direction
+          );
+          setProdutos(novosProdutos);
+          // Atualiza os parâmetros da consulta anterior
+          setPrevQueryParams(queryParams);
         }
       } catch (error) {
         console.error('Erro ao buscar produtos:', error);
       }
     }
 
-    // Verifique se a página atual mudou antes de fazer a consulta
-    if (currentPage !== page || !hasInteracted) {
-      setCurrentPage(page);
-      setHasInteracted(true);
-    } else {
-      fetchData();
-    }
+    fetchData(); // Sempre busca os produtos quando a página é carregada
 
-    return () => {
-      isMounted = false;
-    };
-  }, [currentPage, page, linesPerPage, orderBy, direction, nome, categorias, hasInteracted]);
+  }, [page, linesPerPage, orderBy, direction, nome, categorias, prevQueryParams]);
 
-  const getNextPage = () => {
-    setCurrentPage(currentPage + 1);
+  // Função para navegar para uma página específica
+  const goToPage = (pageNumber: number) => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('page', pageNumber.toString());
+    history(`?${searchParams.toString()}`);
   };
-
-  const getPreviousPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  // Verifique se há uma próxima página com base no número atual de produtos
-  const hasNextPage = produtos.length === linesPerPage;
 
   return (
     <div>
-      <h1>Produtos da Categoria</h1>
-      <ul>
-        {Array.isArray(produtos) && produtos.length > 0 ? (
-          produtos.map((produto) => (
-            <li key={produto.id}>
-              <p>Nome: {produto.nome}</p>
-              <p>Preço: {produto.preco}</p>
-              <p>Quantidade: {produto.quantidade}</p>
-            </li>
-          ))
-        ) : (
-          <li>Nenhum produto encontrado.</li>
-        )}
-      </ul>
-
-      <div>
-        {hasInteracted && hasNextPage && (
-          <button onClick={getNextPage}>Próxima Página</button>
-        )}
-        {hasInteracted && currentPage > 0 && (
-          <button onClick={getPreviousPage}>Página Anterior</button>
-        )}
+      <h1>Produtos:</h1>
+      <div className="row">
+        {produtos.map((produto) => (
+          <div className="col-md-4" key={produto.id}>
+            <ProdutoCard produto={produto} />
+          </div>
+        ))}
       </div>
+      
+      {/* Menu de navegação da página */}
+      <nav aria-label="Page navigation">
+        <ul className="pagination">
+          <li className={`page-item ${page === 0 ? 'disabled' : ''}`}>
+            <button
+              className="page-link"
+              onClick={() => goToPage(page - 1)}
+            >
+              Anterior
+            </button>
+          </li>
+          <li className="page-item">
+            <button
+              className="page-link"
+              onClick={() => goToPage(page + 1)}
+            >
+              Próxima
+            </button>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
 };

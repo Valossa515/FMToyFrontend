@@ -19,8 +19,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       // Chame a função de login do seu serviço de autenticação
       const response = await authservice.login(username, senha);
       onLogin(response);
-      navigate("/categorias")
-      console.log('Redirecionando para /categorias...');
+      navigate(`/clientes/perfil/${response.id}`);
+      console.log('Redirecionando para pagina de perfil');
     } catch (error) {
       console.error('Erro durante o login:', error);
     }
