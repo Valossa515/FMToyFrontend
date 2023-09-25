@@ -1,17 +1,12 @@
-import { EnderecoDTO } from "models/endereco";
-import { PedidoDTO } from "models/pedido";
-import { Roles } from "models/roles";
-
-export interface ClienteDTO {
-    id?: number;
-    nome?: string;
-    email?: string;
-    cpfOuCnpj?: string;
-    senha?: string;
-    username?: string;
-    roles?: Roles[];
-    enderecos?: EnderecoDTO[];
-    telefones?: string[];
-    tipo?: number;
-    pedidos?: PedidoDTO[];
-  }
+export type ClienteDTO  = {
+  id?: number;
+  nome: string;
+  email?: string;
+  cpfOuCnpj: string;
+  senha?: string;
+  username?: string;
+  telefone1: string; 
+  telefone2?: string; 
+  telefone3?: string;
+  tipo: number;
+}

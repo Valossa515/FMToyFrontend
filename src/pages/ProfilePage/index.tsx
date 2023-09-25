@@ -1,23 +1,20 @@
-// CadastroPage.tsx
-import CadastroClienteForm from 'components/ProfileForm';
-import { ClienteDTO } from 'models/cliente';
-import React from 'react';
- // Certifique-se de fornecer o caminho correto
+import ProfileForm from 'components/ProfileForm';
 
-const CadastroPage: React.FC = () => {
-  const handleSubmit = (clienteData: ClienteDTO) => {
-    // Aqui você pode enviar os dados do cliente para o servidor ou realizar outras ações
-    console.log('Dados do cliente a serem enviados:', clienteData);
-    // Após o envio bem-sucedido, você pode redirecionar o usuário para outra página
-    // history('/categorias');
-  };
+import { useParams } from 'react-router-dom';
 
+
+function CadastroPage() {
+ const { id } = useParams();
+ if (id === undefined) {
+  // Lida com a situação em que Id é undefined, por exemplo, redirecione ou mostre uma mensagem de erro
+  return <div>Id não encontrado na URL</div>;
+}
   return (
     <div>
       <h2>Cadastro de Cliente</h2>
-      <CadastroClienteForm onSubmit={handleSubmit} />
+      <ProfileForm id={id} />
     </div>
   );
-};
+}
 
 export default CadastroPage;

@@ -1,31 +1,47 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import authservice from "services/authservice";
+import { ToastContainer, toast } from "react-toastify";
+import { register } from "services/authservice";
 
 const SignupForm: React.FC = () => {
   const history = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      setLoading(true);
-      await authservice.register(username, email, password);
-      setLoading(false);
-      history("/"); // Redirecionar para a página de login após o registro
+      if (password === confirmPassword) {
+        setLoading(true);
+        await register( username, email, password );
+        setLoading(false);
+        history("/"); // Redirecionar para a página de login após o registro
+      } else {
+        setPasswordsMatch(false);
+      }
     } catch (error) {
       setLoading(false);
-      console.error("Erro durante o registro:", error);
+      toast.error('Erro ao criar conta!', {
+        position: toast.POSITION.TOP_CENTER,
+      });
       // Trate o erro de alguma forma apropriada, como exibir uma mensagem de erro
     }
   };
 
+  // Função para verificar a correspondência das senhas e atualizar o estado passwordsMatch
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setConfirmPassword(value);
+    setPasswordsMatch(value === password);
+  };
+
   return (
     <div className="Auth-form-container">
+      <ToastContainer />
       <form className="Auth-form" onSubmit={handleSignup}>
         <div className="Auth-form-content">
           <h3 className="Auth-form-title">Sign Up</h3>
@@ -43,6 +59,7 @@ const SignupForm: React.FC = () => {
               placeholder="e.g Jane Doe"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              required
             />
           </div>
           <div className="form-group mt-3">
@@ -53,6 +70,7 @@ const SignupForm: React.FC = () => {
               placeholder="Email Address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
           <div className="form-group mt-3">
@@ -63,16 +81,32 @@ const SignupForm: React.FC = () => {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
+          <div className="form-group mt-3">
+            <label>Confirm Password</label>
+            <input
+              type="password"
+              className="form-control mt-1"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={handlePasswordChange}
+              required
+            />
+          </div>
+          {!passwordsMatch && (
+            <p className="text-danger mt-2">Passwords do not match</p>
+          )}
           <div className="d-grid gap-2 mt-3">
-            <button type="submit" className="btn btn-primary">
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={!passwordsMatch || loading}
+            >
               {loading ? "Submitting..." : "Submit"}
             </button>
           </div>
-          <p className="text-center mt-2">
-            Forgot <a href="#">password?</a>
-          </p>
         </div>
       </form>
     </div>

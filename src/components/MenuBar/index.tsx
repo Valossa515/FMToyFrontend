@@ -1,6 +1,23 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { logout } from 'services/authservice';
 const MenuBar = () => {
+  const [profileLink, setProfileLink] = useState('');
+  const history = useNavigate();
+  useEffect(() => {
+    const id = localStorage.getItem('userId');
+    if (id) {
+      const profileUrl = `/clientes/perfil/${id}`;
+      setProfileLink(profileUrl);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    logout();  // Chama a função de logout do authService
+    history('/');
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container">
@@ -29,9 +46,11 @@ const MenuBar = () => {
             </li>
             {/* Adicione mais links para outras páginas aqui */}
             <li className="nav-item">
-              <Link className="nav-link" to="/clientes/perfil/:id">Perfil</Link>
+              <Link className="nav-link" to={profileLink}>Perfil</Link>
             </li>
-            {/* Adicione mais links para outras páginas aqui */}
+            <li className="nav-item">
+              <button className="nav-link" onClick={handleLogout}>Logout</button>
+            </li>
           </ul>
         </div>
       </div>

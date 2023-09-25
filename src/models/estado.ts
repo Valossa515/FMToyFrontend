@@ -1,5 +1,4 @@
-export interface EstadoDTO {
-    id: number;
-    nome: string;
-
-  }
+export type EstadoDTO = {
+  id: number;
+  nome: string;
+}
